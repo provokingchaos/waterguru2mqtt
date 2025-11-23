@@ -64,14 +64,14 @@ TZ | Timezone | Default: UTC
 Example topics:
 
 waterguru/raw
-waterguru/<pool_slug>/status
-waterguru/<pool_slug>/water_temp
-waterguru/<pool_slug>/latest_measure_time
-waterguru/<pool_slug>/refillables/cassette/pct_left
-waterguru/<pool_slug>/refillables/battery/percent_left
-waterguru/<pool_slug>/measurement/free_cl/value
-waterguru/<pool_slug>/measurement/free_cl/alerts/0/text
-waterguru/<pool_slug>/alerts/summary
+waterguru/[<pool_slug>]/status
+waterguru/[<pool_slug>]/water_temp
+waterguru/[<pool_slug>]/latest_measure_time
+waterguru/[<pool_slug>]/refillables/cassette/pct_left
+waterguru/[<pool_slug>]/refillables/battery/percent_left
+waterguru/[<pool_slug>]/measurement/free_cl/value
+waterguru/[<pool_slug>]/measurement/free_cl/alerts/0/text
+waterguru/[<pool_slug>]/alerts/summary
 
 Full topic mapping + HA examples: see sensors.yaml
 
@@ -98,7 +98,7 @@ docker run -d \
   provokingchaos/waterguru2mqtt:latest
 
 Manual refresh:
-http://[<container-ip>]:53255/api/wg
+http://[<your_container_ip>]:53255/api/wg
 
 ---
 
