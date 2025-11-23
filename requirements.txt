@@ -1,0 +1,6 @@
+flask
+boto3
+pycognito
+requests
+requests-aws4auth
+paho-mqtt

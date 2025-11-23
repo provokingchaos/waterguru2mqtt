@@ -1,0 +1,177 @@
+# ================================
+# waterguru2mqtt Home Assistant Sensors
+# Replace <your_pool_slug> with the slug appearing under:
+#   waterguru/<your_pool_slug>/
+# ================================
+
+mqtt:
+  sensor:
+
+    # =====================
+    # WATERGURU CORE STATUS
+    # =====================
+    - name: "WaterGuru Status"
+      unique_id: waterguru_<your_pool_slug>_status
+      state_topic: "waterguru/<your_pool_slug>/status"
+      icon: mdi:pool
+
+    - name: "WaterGuru Water Temperature"
+      unique_id: waterguru_<your_pool_slug>_water_temperature
+      state_topic: "waterguru/<your_pool_slug>/water_temp"
+      unit_of_measurement: "°F"
+      device_class: temperature
+      icon: mdi:coolant-temperature
+
+    - name: "WaterGuru Last Measurement"
+      unique_id: waterguru_<your_pool_slug>_last_measurement
+      state_topic: "waterguru/<your_pool_slug>/latest_measure_time"
+      device_class: timestamp
+      icon: mdi:clock-check
+
+    - name: "WaterGuru Last Measurement (Human)"
+      unique_id: waterguru_<your_pool_slug>_last_measurement_human
+      state_topic: "waterguru/<your_pool_slug>/latest_measure_time_human"
+      icon: mdi:clock-outline
+
+
+    # =====================
+    # REFILLABLES
+    # =====================
+    - name: "WaterGuru Cassette % Remaining"
+      unique_id: waterguru_<your_pool_slug>_cassette_remaining
+      state_topic: "waterguru/<your_pool_slug>/refillables/cassette/pct_left"
+      unit_of_measurement: "%"
+      icon: mdi:counter
+
+    - name: "WaterGuru Cassette Days Remaining"
+      unique_id: waterguru_<your_pool_slug>_cassette_days_remaining
+      state_topic: "waterguru/<your_pool_slug>/refillables/cassette/time_left_text"
+      icon: mdi:calendar-clock
+      value_template: >
+        {% if value is string and value|length > 0 %}
+          {% set first = value.split(' ')[0] %}
+          {{ first | int(0) }}
+        {% else %}
+          0
+        {% endif %}
+
+    - name: "WaterGuru Battery %"
+      unique_id: waterguru_<your_pool_slug>_battery
+      state_topic: "waterguru/<your_pool_slug>/refillables/battery/percent_left"
+      unit_of_measurement: "%"
+      device_class: battery
+      icon: mdi:battery
+
+
+    # =====================
+    # CHEMISTRY READINGS
+    # =====================
+    - name: "WaterGuru Free Chlorine"
+      unique_id: waterguru_<your_pool_slug>_free_chlorine
+      state_topic: "waterguru/<your_pool_slug>/measurement/free_cl/value"
+      unit_of_measurement: "ppm"
+      icon: mdi:biohazard
+
+    - name: "WaterGuru pH"
+      unique_id: waterguru_<your_pool_slug>_ph
+      state_topic: "waterguru/<your_pool_slug>/measurement/ph/value"
+      icon: mdi:alpha-p-circle-outline
+
+    - name: "WaterGuru Total Alkalinity"
+      unique_id: waterguru_<your_pool_slug>_total_alkalinity
+      state_topic: "waterguru/<your_pool_slug>/measurement/ta/value"
+      unit_of_measurement: "ppm"
+      icon: mdi:beaker-outline
+
+    - name: "WaterGuru Calcium Hardness"
+      unique_id: waterguru_<your_pool_slug>_calcium_hardness
+      state_topic: "waterguru/<your_pool_slug>/measurement/ch/value"
+      unit_of_measurement: "ppm"
+      icon: mdi:water-opacity
+
+    - name: "WaterGuru Cyanuric Acid"
+      unique_id: waterguru_<your_pool_slug>_cyanuric_acid
+      state_topic: "waterguru/<your_pool_slug>/measurement/cya/value"
+      unit_of_measurement: "ppm"
+      icon: mdi:flask-outline
+
+    - name: "WaterGuru Total Hardness"
+      unique_id: waterguru_<your_pool_slug>_total_hardness
+      state_topic: "waterguru/<your_pool_slug>/measurement/th/value"
+      unit_of_measurement: "ppm"
+      icon: mdi:water-circle
+
+
+    # =====================
+    # ALERTS (PER MEASUREMENT)
+    # =====================
+    - name: "WG Free Chlorine Alert"
+      unique_id: waterguru_<your_pool_slug>_free_chlorine_alert
+      state_topic: "waterguru/<your_pool_slug>/measurement/free_cl/alerts/0/text"
+      icon: mdi:alert
+
+    - name: "WG pH Alert"
+      unique_id: waterguru_<your_pool_slug>_ph_alert
+      state_topic: "waterguru/<your_pool_slug>/measurement/ph/alerts/0/text"
+      icon: mdi:alert
+
+    - name: "WG Total Alkalinity Alert"
+      unique_id: waterguru_<your_pool_slug>_total_alkalinity_alert
+      state_topic: "waterguru/<your_pool_slug>/measurement/ta/alerts/0/text"
+      icon: mdi:alert
+
+    - name: "WG Calcium Hardness Alert"
+      unique_id: waterguru_<your_pool_slug>_calcium_hardness_alert
+      state_topic: "waterguru/<your_pool_slug>/measurement/ch/alerts/0/text"
+      icon: mdi:alert
+
+    - name: "WG Cyanuric Acid Alert"
+      unique_id: waterguru_<your_pool_slug>_cyanuric_acid_alert
+      state_topic: "waterguru/<your_pool_slug>/measurement/cya/alerts/0/text"
+      icon: mdi:alert
+
+    - name: "WG Total Hardness Alert"
+      unique_id: waterguru_<your_pool_slug>_total_hardness_alert
+      state_topic: "waterguru/<your_pool_slug>/measurement/th/alerts/0/text"
+      icon: mdi:alert
+
+
+    # =====================
+    # ALERT SUMMARY
+    # =====================
+    - name: "WaterGuru Alert Count"
+      unique_id: waterguru_<your_pool_slug>_alert_count
+      state_topic: "waterguru/<your_pool_slug>/alerts/count"
+      unit_of_measurement: "alerts"
+      icon: mdi:alert-circle-outline
+
+    - name: "WaterGuru Total Alerts"
+      unique_id: waterguru_<your_pool_slug>_total_alert_count
+      state_topic: "waterguru/<your_pool_slug>/alerts/total_count"
+      unit_of_measurement: "alerts"
+      icon: mdi:alert-decagram-outline
+
+    - name: "WaterGuru Alert Summary"
+      unique_id: waterguru_<your_pool_slug>_alert_summary
+      state_topic: "waterguru/<your_pool_slug>/alerts/summary"
+      icon: mdi:alert-octagon-outline
+
+
+    # =====================
+    # OPTIONAL: FLOW + SIGNAL
+    # =====================
+    - name: "WaterGuru Skimmer Flow"
+      unique_id: waterguru_<your_pool_slug>_skimmer_flow
+      state_topic: "waterguru/<your_pool_slug>/flow/gpm_target"
+      unit_of_measurement: "gpm"
+      icon: mdi:pipe
+
+    - name: "WaterGuru Skimmer Flow Alert"
+      unique_id: waterguru_<your_pool_slug>_skimmer_flow_alert
+      state_topic: "waterguru/<your_pool_slug>/flow/alert"
+      icon: mdi:alert
+
+    - name: "WaterGuru Signal Strength"
+      unique_id: waterguru_<your_pool_slug>_signal_strength
+      state_topic: "waterguru/<your_pool_slug>/signal/description"
+      icon: mdi:wifi-strength-3
