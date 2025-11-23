@@ -98,14 +98,14 @@ docker run -d \
   provokingchaos/waterguru2mqtt:latest
 
 Manual refresh:
-http://<container-ip>:53255/api/wg
+http://[<container-ip>]:53255/api/wg
 
 ---
 
 ## Home Assistant
 
 Sensor examples available in sensors.yaml  
-Replace <your_pool_slug> with your pool slug discovered in MQTT Explorer.
+Replace [<your_pool_slug>] with your pool slug discovered in MQTT Explorer.
 
 ---
 
