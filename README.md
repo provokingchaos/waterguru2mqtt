@@ -95,7 +95,7 @@ docker run -d \
   -e WG_RUN_TIME_2="12:00" \
   -e TZ="America/Chicago" \
   -p 53255:53255 \
-  ghcr.io/<username>/waterguru2mqtt:latest
+  provokingchaos/waterguru2mqtt:latest
 
 Manual refresh:
 http://<container-ip>:53255/api/wg
