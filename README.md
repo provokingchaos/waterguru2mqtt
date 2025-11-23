@@ -1,3 +1,5 @@
+![alt text](https://github.com/provokingchaos/waterguru2mqtt/blob/main/waterguru.png)
+
 waterguru2mqtt
 
 waterguru2mqtt is a lightweight Dockerized service that:
