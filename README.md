@@ -1,4 +1,4 @@
-![alt text](https://github.com/provokingchaos/waterguru2mqtt/blob/main/waterguru.png)
+![alt text](https://raw.githubusercontent.com/provokingchaos/waterguru2mqtt/refs/heads/main/waterguru.png)
 
 waterguru2mqtt
 
