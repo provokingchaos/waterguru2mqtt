@@ -107,6 +107,8 @@ http://[<your_container_ip>]:53255/api/wg
 Sensor examples available in sensors.yaml  
 Replace [<your_pool_slug>] with your pool slug discovered in MQTT Explorer.
 
+Use customize.yaml to add min, max, and target attributes to your sensors.
+
 ---
 
 ## License
