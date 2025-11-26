@@ -44,6 +44,10 @@ mqtt:
       device_class: timestamp
       icon: mdi:calendar-clock
 
+    - name: "Pool Last Measurement (Human)"
+      unique_id: waterguru_<pool_slug>_last_measurement_human
+      state_topic: "waterguru/<pool_slug>/latest_measure_time_human"
+      icon: mdi:calendar-clock
 
     ##########################################################################
     # REFILLABLES
