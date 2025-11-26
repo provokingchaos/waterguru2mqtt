@@ -44,6 +44,51 @@ MQTT_BASE_TOPIC = os.environ.get("MQTT_BASE_TOPIC", "waterguru")
 
 mqtt_client = None
 
+# ---------------------------------------------------------------------
+# Home Assistant REST API CONFIG (for min/max/target attrs)
+# ---------------------------------------------------------------------
+HA_BASE_URL = os.environ.get("HA_BASE_URL")  # e.g. http://homeassistant:8123
+HA_TOKEN = os.environ.get("HA_TOKEN")        # Long-lived access token
+
+# Mapping of entities -> enforced attributes (from AppDaemon WaterGuruAttrs)
+ENTITY_ATTRS = {
+    "sensor.waterguru_park_meadow_pool_calcium_hardness": {
+        "min": 0,
+        "max": 1600,
+        "target": 300.0,
+    },
+    "sensor.waterguru_park_meadow_pool_cyanuric_acid_stabilizer": {
+        "min": 0,
+        "max": 300,
+        "target": 65.0,
+    },
+    "sensor.waterguru_park_meadow_pool_free_chlorine": {
+        "min": 0.0,
+        "max": 10.0,
+        "target": 3.0,
+    },
+    "sensor.waterguru_park_meadow_pool_ph": {
+        "min": 6.5,
+        "max": 8.5,
+        "target": 7.5,
+    },
+    "sensor.waterguru_park_meadow_pool_skimmer_flow": {
+        "min": 0,
+        "max": 90,
+        "target": 15.0,
+    },
+    "sensor.waterguru_park_meadow_pool_total_alkalinity": {
+        "min": 0,
+        "max": 240,
+        "target": 100.0,
+    },
+    "sensor.waterguru_park_meadow_pool_total_hardness": {
+        "min": 0,
+        "max": 1600,
+        "target": 300.0,
+    },
+}
+
 
 # ---------------------------------------------------------------------
 # Helpers
@@ -114,6 +159,96 @@ def publish_raw_dashboard(json_str: str):
     topic = f"{MQTT_BASE_TOPIC}/raw"
     publish_leaf(topic, json_str)
     print(f"[MQTT] Published dashboard JSON → {topic}")
+
+
+# ---------------------------------------------------------------------
+# Home Assistant attribute enforcement (min/max/target)
+# ---------------------------------------------------------------------
+def ha_api_request(method: str, path: str, **kwargs):
+    """
+    Call Home Assistant's REST API.
+    Returns requests.Response or None if HA not configured.
+    """
+    if not HA_BASE_URL or not HA_TOKEN:
+        return None
+
+    url = HA_BASE_URL.rstrip("/") + path
+    headers = kwargs.pop("headers", {})
+    headers.setdefault("Authorization", f"Bearer {HA_TOKEN}")
+    headers.setdefault("Content-Type", "application/json")
+
+    try:
+        resp = requests.request(method, url, headers=headers, timeout=10, **kwargs)
+        return resp
+    except Exception as e:
+        print(f"[HA] Error calling {url}: {e}")
+        return None
+
+
+def apply_attrs_to_entity(entity_id: str, desired: dict):
+    """
+    Mimic AppDaemon WaterGuruAttrs.apply_attrs:
+    - Fetch current state/attributes
+    - Merge in desired min/max/target
+    - Post updated state back if changed
+    """
+    if not desired:
+        return
+
+    resp = ha_api_request("GET", f"/api/states/{entity_id}")
+    if resp is None:
+        # HA not configured
+        return
+    if not resp.ok:
+        print(f"[HA] Failed to read {entity_id}: {resp.status_code} {resp.text}")
+        return
+
+    try:
+        cur = resp.json()
+    except Exception as e:
+        print(f"[HA] Failed to parse JSON for {entity_id}: {e}")
+        return
+
+    state = cur.get("state")
+    attrs = dict(cur.get("attributes") or {})
+
+    changed = False
+    for k, v in desired.items():
+        if attrs.get(k) != v:
+            attrs[k] = v
+            changed = True
+
+    if not changed:
+        return
+
+    payload = {"state": state, "attributes": attrs}
+    resp2 = ha_api_request(
+        "POST",
+        f"/api/states/{entity_id}",
+        data=json.dumps(payload),
+    )
+    if not resp2:
+        return
+    if not resp2.ok:
+        print(
+            f"[HA] Failed to update {entity_id}: {resp2.status_code} {resp2.text}"
+        )
+    else:
+        print(f"[HA] Updated attributes on {entity_id}: {desired}")
+
+
+def apply_all_attrs():
+    """
+    Apply min/max/target attributes to all configured WaterGuru entities.
+    Called after each successful WaterGuru → MQTT publish.
+    """
+    if not HA_BASE_URL or not HA_TOKEN:
+        # Don't spam; just one note on first call
+        print("[HA] HA_BASE_URL or HA_TOKEN not set; skipping attribute updates.")
+        return
+
+    for ent, desired in ENTITY_ATTRS.items():
+        apply_attrs_to_entity(ent, desired)
 
 
 # ---------------------------------------------------------------------
@@ -412,6 +547,9 @@ def run_and_publish():
 
     # Per-pool JSON + flattened metrics + ranges + refillables + alerts
     publish_pools_and_metrics(data)
+
+    # After MQTT updates, enforce min/max/target attributes via HA REST API
+    apply_all_attrs()
 
     print("[WG] Publish complete")
     return val
