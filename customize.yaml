@@ -1,0 +1,30 @@
+homeassistant:
+  customize:
+    sensor.waterguru_[<your_pool_slug>]_pool_free_chlorine:
+      min: 0.0
+      max: 10.0
+      target: 3.0
+    sensor.waterguru_[<your_pool_slug>]_pool_ph:
+      min: 6.5
+      max: 8.5
+      target: 7.5
+    sensor.waterguru_[<your_pool_slug>]_pool_skimmer_flow:
+      min: 0
+      max: 90
+      target: 15.0
+    sensor.waterguru_[<your_pool_slug>]_pool_total_alkalinity:
+      min: 0
+      max: 240
+      target: 100.0
+    sensor.waterguru_[<your_pool_slug>]_pool_calcium_hardness:
+      min: 0
+      max: 1600
+      target: 300.0
+    sensor.waterguru_[<your_pool_slug>]_pool_cyanuric_acid_stabilizer:
+      min: 0
+      max: 300
+      target: 65.0
+    sensor.waterguru_[<your_pool_slug>]_pool_total_hardness:
+      min: 0
+      max: 1600
+      target: 300.0
